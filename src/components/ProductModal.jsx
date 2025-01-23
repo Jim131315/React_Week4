@@ -9,7 +9,7 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 
 
-function ProductModal({ modalMode, myModalRef, tempProduct }) {
+function ProductModal({ modalMode, myModalRef, tempProduct, getProducts }) {
     const [modalData, setModalData] = useState(tempProduct);
 
     useEffect(() => {
@@ -105,7 +105,9 @@ function ProductModal({ modalMode, myModalRef, tempProduct }) {
         const apiCall = modalMode === 'create' ? createProduct : updateProduct
         try {
           await apiCall();
+
           getProducts();
+
           handleCloseProductModal();
         } catch (error) {
           alert('更新產品失敗')

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal } from "bootstrap";
 import axios from "axios";
 import Pagination from "../components/Pagination";
 import ProductModal from "../components/ProductModal";
+import DelProductModal from "../components/DelProductModal";
 
 
 
@@ -27,23 +27,12 @@ const defaultModalState = {
 function ProductPage() {
 
     const [products, setProducts] = useState([]);
-
     const [tempProduct, setTempProduct] = useState(defaultModalState);
-
     const myModalRef = useRef(null);
-    const delProductModalRef = useRef(null)
     const delMyModalRef = useRef(null)
+
     // 新增 Modal 狀態：打開 Modal 後，變更狀態來修改標題和值
     const [modalMode, setModalMode] = useState(null)
-    
-    
-    // 建立 Modal 實例
-    useEffect(() => {
-        delMyModalRef.current = new Modal(delProductModalRef.current,  {
-        backdrop: false
-        })
-    }, [])
-    
 
     // 取得產品資料串接 GET API
     const getProducts = async (page = 1) => {
@@ -68,23 +57,7 @@ function ProductPage() {
         setTempProduct(product)
         delMyModalRef.current.show();
     }
-    // 關閉刪除產品 Modal
-    const handleCloseDelProductModal = () => {
-        delMyModalRef.current.hide();
-    }
-
-    
-    // 刪除產品資料串接 DELETE API
-    const deleteProduct = async () => {
-      try {
-        await axios.delete(`${BASE_URL}/v2/api/${API_PATH}/admin/product/${tempProduct.id}`)
-      } catch (error) {
-        alert('刪除產品失敗')
-      }
-    }
-
    
-
      // 打開產品 Modal
     const handleOpenProductModal = (mode, product) => {
         myModalRef.current.show();
@@ -103,17 +76,6 @@ function ProductPage() {
         }
     }
     
-     // 確認邏輯
-    const handleDeleteProduct = async () => {
-        try {
-        await deleteProduct()
-        getProducts()
-        handleCloseDelProductModal()
-        } catch (error) {
-        alert('刪除產品失敗')
-        }
-    }
-
     //新增狀態來儲存頁面資訊
     const [ pageInfo, setPageInfo ] = useState({})
     // 換頁功能（調整 getProducts 函式）
@@ -121,7 +83,6 @@ function ProductPage() {
         getProducts(page)
     }
 
-    
     return (
         <>
             <div className="container py-5">
@@ -169,45 +130,8 @@ function ProductPage() {
             <Pagination pageInfo={pageInfo} handlePageChange={handlePageChange} />
             </div>
 
-            <ProductModal modalMode={modalMode} myModalRef={myModalRef} tempProduct={tempProduct} />
-            {/* 刪除產品 Modal */}
-            <div ref={delProductModalRef}
-        className="modal fade"
-        id="delProductModal"
-        tabIndex="-1"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-        <div className="modal-dialog">
-            <div className="modal-content">
-            <div className="modal-header">
-                <h1 className="modal-title fs-5">刪除產品</h1>
-                <button
-                onClick={handleCloseDelProductModal}
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                ></button>
-            </div>
-            <div className="modal-body">
-                你是否要刪除 
-                <span className="text-danger fw-bold">{tempProduct.title}</span>
-            </div>
-            <div className="modal-footer">
-                <button
-                onClick={handleCloseDelProductModal}
-                type="button"
-                className="btn btn-secondary"
-                >
-                取消
-                </button>
-                <button onClick={handleDeleteProduct} type="button" className="btn btn-danger">
-                刪除
-                </button>
-            </div>
-            </div>
-        </div>
-        </div>
+            <ProductModal modalMode={modalMode} myModalRef={myModalRef} tempProduct={tempProduct} getProducts={getProducts} />
+            <DelProductModal delMyModalRef={delMyModalRef} tempProduct={tempProduct} getProducts={getProducts} />
         </>
       )
 }
