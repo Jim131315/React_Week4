@@ -12,8 +12,14 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 function ProductModal({ modalMode, myModalRef, tempProduct }) {
     const [modalData, setModalData] = useState(tempProduct);
 
+    useEffect(() => {
+        setModalData({
+            ...tempProduct,
+        })
+    }, [tempProduct])
+
     const productModalRef = useRef(null)
-    
+     
     
     useEffect(() => {
         myModalRef.current = new Modal(productModalRef.current,  {
@@ -110,6 +116,7 @@ function ProductModal({ modalMode, myModalRef, tempProduct }) {
         const file = e.target.files[0];
         const formData = new FormData();
         formData.append('file-to-upload', file)
+        
         try {
             const res = await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/upload`, formData);
 
@@ -142,7 +149,7 @@ function ProductModal({ modalMode, myModalRef, tempProduct }) {
                         <label htmlFor="fileInput" className="form-label"> 圖片上傳 </label>
                         <input
                             type="file" 
-                            onClick={handleFileChange} 
+                            onChange={handleFileChange} 
                             accept=".jpg,.jpeg,.png"
                             className="form-control"
                             id="fileInput"
