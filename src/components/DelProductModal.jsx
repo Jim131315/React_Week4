@@ -20,7 +20,7 @@ function delProductModal({ getProducts, tempProduct, delMyModalRef }) {
     }, [])
     
      // 確認邏輯
-    const handleDeleteProduct = async () => {~
+    const handleDeleteProduct = async () => {
         try {
         await deleteProduct()
         getProducts()
